@@ -71,7 +71,7 @@ public class RabbitMqConfig {
             if (!ack) {
                 Message message = correlationData.getReturned().getMessage();
                 byte[] body = message.getBody();
-                log.error("Fail to producerId:{}", correlationData.getId());
+                log.error("Fail to producerId:{}, body:{}", correlationData.getId(), body);
             }
         }));
         return rabbitTemplate;

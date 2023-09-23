@@ -9,3 +9,6 @@ spring:
     exchange.name: ex_giron
     routing.key: routing
     publisher-confirm-type: correlated
+    listener:
+      simple:
+        acknowledge-mode: manual
