@@ -8,4 +8,4 @@ spring:
     queue.name: giron
     exchange.name: ex_giron
     routing.key: routing
-
+    publisher-confirm-type: correlated
