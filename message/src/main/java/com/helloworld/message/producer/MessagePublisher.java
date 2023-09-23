@@ -3,7 +3,6 @@ package com.helloworld.message.producer;
 import com.helloworld.message.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

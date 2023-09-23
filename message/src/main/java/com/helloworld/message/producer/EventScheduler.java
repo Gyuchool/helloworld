@@ -3,8 +3,6 @@ package com.helloworld.message.producer;
 import com.helloworld.message.MessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,11 +13,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class EventScheduler{
     private final MessagePublisher messagePublisher;
+    private static int ID = 0;
 
     @Scheduled(fixedRate = 10000L)
     public void startAll() {
-        MessageDto messageDto = new MessageDto("Publish Message");
+        var value = ID += 1;
+        MessageDto messageDto = new MessageDto(value+"번 메시지");
         messagePublisher.sendMessage(messageDto);
-        log.info("start rabbitmq container: {}", messageDto);
     }
 }
