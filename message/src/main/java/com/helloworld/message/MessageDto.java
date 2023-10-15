@@ -1,13 +1,12 @@
 package com.helloworld.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageDto {
-    private String message;
+    private int id;
 
 }

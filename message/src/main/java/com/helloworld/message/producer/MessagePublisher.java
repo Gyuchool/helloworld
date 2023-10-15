@@ -1,5 +1,7 @@
 package com.helloworld.message.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.helloworld.message.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Message;
@@ -21,13 +23,18 @@ public class MessagePublisher {
     @Value("${spring.rabbitmq.routing.key}")
     private String routingKey;
 
+    private final ObjectMapper objectMapper;
     private final RabbitTemplate rabbitTemplate;
 
     public void sendMessage(MessageDto message) {
-        rabbitTemplate.send(
-                exchange,
-                routingKey,
-                new Message(message.getMessage().getBytes()),
-                new CorrelationData(UUID.randomUUID().toString()));
+        try {
+            rabbitTemplate.send(
+                    exchange,
+                    routingKey,
+                    new Message(objectMapper.writeValueAsBytes(message)),
+                    new CorrelationData(UUID.randomUUID().toString()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

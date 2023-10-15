@@ -18,7 +18,7 @@ class EventScheduler{
     @Scheduled(fixedRate = 10000L)
     public void startAll() {
         var value = ID += 1;
-        MessageDto messageDto = new MessageDto(value+"번 메시지");
+        MessageDto messageDto = new MessageDto(value);
         messagePublisher.sendMessage(messageDto);
     }
 }
