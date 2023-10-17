@@ -53,23 +53,6 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    Queue deadLetterQueue() {
-        return QueueBuilder.durable("giron.deadletter")
-                .build();
-    }
-
-    @Bean
-    FanoutExchange deadLetterExchange() {
-        return new FanoutExchange(exchangeName+".dlx");
-    }
-
-
-    @Bean
-    Binding deadLetterBinding() {
-        return BindingBuilder.bind(deadLetterQueue()).to(deadLetterExchange());
-    }
-
-    @Bean
     public DirectExchange exchange() {
         return new DirectExchange(exchangeName);
     }
@@ -92,39 +75,5 @@ public class RabbitMqConfig {
             }
         }));
         return rabbitTemplate;
-    }
-
-    @Component
-    public class DeadLetterMessageListener implements MessageListener {
-
-        @Override
-        public void onMessage(Message message) {
-            try {
-                MessageDto messageDto = objectMapper.readValue(message.getBody(), MessageDto.class);
-                log.info("Received message from DLQ: {}", messageDto);
-
-            }catch(Exception e){
-                log.error("Error while processing message from DLQ", e);
-                //reject the message
-            }
-        }
-    }
-
-    @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-                                             DeadLetterMessageListener listener) {
-        SimpleRabbitListenerContainerFactory containerFactory = new SimpleRabbitListenerContainerFactory();
-        containerFactory.setAdviceChain(
-                RetryInterceptorBuilder.stateless()
-                        .maxAttempts(3)
-                        .backOffOptions(1000, 2, 2000)
-                        .recoverer(new RejectAndDontRequeueRecoverer())
-                        .build()
-        );
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueues(deadLetterQueue());
-        container.setMessageListener(listener);
-        return container;
     }
 }
