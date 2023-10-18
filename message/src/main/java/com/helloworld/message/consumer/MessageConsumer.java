@@ -18,8 +18,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MessageConsumer {
 
-    private static final String X_RETRIES_HEADER = "x-retries";
-
     @Value("${spring.rabbitmq.queue.name}")
     private String queueName;
 
@@ -41,7 +39,6 @@ public class MessageConsumer {
         }
         if (dto.getId() % 2 == 0) {
             log.info("Even number!! go to dead letter queue:" + dto);
-//            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
             throw new AmqpRejectAndDontRequeueException("Even number!! go to dead letter queue:" + dto);
         }
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);

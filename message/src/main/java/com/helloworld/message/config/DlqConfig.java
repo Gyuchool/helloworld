@@ -44,20 +44,6 @@ public class DlqConfig {
     }
 
     @Bean
-    SimpleRabbitListenerContainerFactory listenerContainer(ConnectionFactory connectionFactory) {
-        SimpleRabbitListenerContainerFactory container = new SimpleRabbitListenerContainerFactory();
-        container.setConnectionFactory(connectionFactory);
-        MessageRecoverer messageRecoverer = new RejectAndDontRequeueRecoverer();
-        container.setAdviceChain(RetryInterceptorBuilder.stateless()
-                .maxAttempts(3)
-                .backOffOptions(Duration.ofSeconds(3L).toMillis(), 2, Duration.ofSeconds(10L).toMillis())
-                .recoverer(messageRecoverer)
-                .build());
-
-        return container;
-    }
-
-    @Bean
     SimpleRabbitListenerContainerFactory deadListenerContainer(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory container = new SimpleRabbitListenerContainerFactory();
         container.setConnectionFactory(connectionFactory);

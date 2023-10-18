@@ -1,7 +1,6 @@
 package com.helloworld.message.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.helloworld.message.MessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
@@ -9,14 +8,14 @@ import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import java.time.Duration;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -65,7 +64,7 @@ public class RabbitMqConfig {
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setConfirmCallback(((correlationData, ack, cause) -> {
             if (!ack) {
@@ -75,5 +74,19 @@ public class RabbitMqConfig {
             }
         }));
         return rabbitTemplate;
+    }
+
+    @Bean
+    SimpleRabbitListenerContainerFactory listenerContainer(ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory container = new SimpleRabbitListenerContainerFactory();
+        container.setConnectionFactory(connectionFactory);
+        MessageRecoverer messageRecoverer = new RejectAndDontRequeueRecoverer();
+        container.setAdviceChain(RetryInterceptorBuilder.stateless()
+                .maxAttempts(3)
+                .backOffOptions(Duration.ofSeconds(3L).toMillis(), 2, Duration.ofSeconds(1000L).toMillis())
+                .recoverer(messageRecoverer)
+                .build());
+
+        return container;
     }
 }
