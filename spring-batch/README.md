@@ -1,6 +1,8 @@
 spring batch 5.x
 
 AS-IS
+10만개 기준
+시간: 7m
 ```java
 		HashMap<String, Object> param = new HashMap<>();
 		param.put("date", jobParameter.getDate());
@@ -14,6 +16,7 @@ AS-IS
 ```
 
 TO-BE
+시간: 4m
 ```java
 QuerydslNoOffsetNumberOptions<User, Long> options =
 				new QuerydslNoOffsetNumberOptions<>(user.id, Expression.ASC);
