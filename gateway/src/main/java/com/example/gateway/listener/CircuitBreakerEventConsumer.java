@@ -26,6 +26,9 @@ public class CircuitBreakerEventConsumer implements EventConsumer<CircuitBreaker
 		if (transitionEvent.getStateTransition() == CLOSED_TO_OPEN) {
 			logger.warn("[서킷] 열렸다!!!!!!!!");
 			slackNotificationService.send("서킷 브레이커가 열렸습니다: " + transitionEvent.getCircuitBreakerName() + ":: 시간:" + transitionEvent.getCreationTime());
-		} 
+		} else if (transitionEvent.getStateTransition() == OPEN_TO_CLOSED || transitionEvent.getStateTransition() == HALF_OPEN_TO_CLOSED) {
+			logger.info("[서킷] 닫혔다!!!!!!!!!");
+			slackNotificationService.send("서킷 브레이커가 닫혔습니다: " + transitionEvent.getCircuitBreakerName() + ":: 시간:" + transitionEvent.getCreationTime());
+		}
 	}
 }
