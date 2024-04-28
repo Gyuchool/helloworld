@@ -1,0 +1,2 @@
+## localhost test
+GET localhost:8081/test/api/app/version
